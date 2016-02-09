@@ -28,6 +28,8 @@ public class WebNode {
     private final boolean isURL;
     private final String baseUrl;
 
+    private boolean visited;
+
     private final LinkedList<WebNode> children;
 
     public WebNode(final String url) {
@@ -35,6 +37,7 @@ public class WebNode {
     }
 
     public WebNode(final String path, final boolean isURL) {
+        this.visited = false;
         this.path = path;
         this.isURL = isURL;
         this.children = new LinkedList<>();
@@ -125,11 +128,27 @@ public class WebNode {
      *
      * @return first element of list
      */
-    public final WebNode popNode() {
-        if (!this.children.isEmpty()) {
-            return this.children.pop();
+    public final WebNode getUnivisitedNode() {
+        for (WebNode webNode : this.children) {
+            if (!webNode.isVisited()) {
+                return webNode;
+            }
         }
         return null;
+    }
+
+    /**
+     *
+     * Setters and Getters
+     *
+     */
+
+    public boolean isVisited() {
+        return visited;
+    }
+
+    public void setVisited(boolean visited) {
+        this.visited = visited;
     }
 
     public boolean isURL() {

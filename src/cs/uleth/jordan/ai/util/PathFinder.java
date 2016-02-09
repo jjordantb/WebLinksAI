@@ -29,6 +29,16 @@ public class PathFinder {
         if (startNode.isURL()) {
             final LinkedList<WebNode> queue = new LinkedList<>();
             queue.add(startNode);
+            startNode.setVisited(true);
+            while (!queue.isEmpty()) {
+                WebNode node = queue.remove();
+                WebNode child = null;
+                while ((child = node.getUnivisitedNode()) != null) {
+                    child.setVisited(true);
+                    queue.add(child);
+                }
+            }
+
 
         } else {
 
