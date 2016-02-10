@@ -12,7 +12,7 @@ public class UrlFilter implements Filter<String> {
                 && !webNode.endsWith(".gif") && !webNode.endsWith(".mp4")
                 && !webNode.endsWith(".pdf") && !webNode.endsWith(".xml")
                 && !webNode.contains(".css")
-                && (webNode.startsWith("https://") || webNode.startsWith("http://"));
+                && (webNode.startsWith("https://") || webNode.startsWith("http://") || webNode.startsWith("/"));
     }
 
 }

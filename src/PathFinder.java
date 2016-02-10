@@ -26,13 +26,12 @@ public class PathFinder {
         startNode.setVisited(true);
         while (!queue.isEmpty()) {
             WebNode testNode = queue.remove();
-            System.out.println(testNode.getPath() + " : " + testNode.getParent());
             if (testNode.getPath().equals(this.endNode.getPath())) {
                 return testNode;
             }
             testNode.populateChildNodes();
             queue.addAll(testNode.getChildren());
-            System.out.println(queue.size());
+            System.out.println("Working.... Queue Size: " + queue.size());
         }
         return null;
     }

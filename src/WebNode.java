@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 public class WebNode {
 
     public static final Pattern hrefRegex = Pattern.compile("href=\"(.*?)\"");
-    public static final Pattern urlRegex = Pattern.compile("(http://.*?)");
+    public static final Pattern urlRegex = Pattern.compile("(www.*)");
 
     private String path;
     private final String baseUrl;
@@ -33,7 +33,7 @@ public class WebNode {
         this.children = new LinkedList<>();
         final Matcher m = urlRegex.matcher(this.path);
         if (m.find()) {
-            this.baseUrl = m.group(1);
+            this.baseUrl = "http://" + m.group(1);
         } else {
             this.baseUrl = null;
         }
@@ -71,7 +71,7 @@ public class WebNode {
         if (data != null) {
             final Matcher matcher = hrefRegex.matcher(data);
             while (matcher.find()) {
-                final String match = matcher.group(1);
+                String match = matcher.group(1);
                 // For link extensions
                 if (this.validateUrl(match) && match.startsWith("/") && !this.childrenContains(this.baseUrl + match)) {
                     this.pushChildNode(new WebNode(this.baseUrl + match, this));
