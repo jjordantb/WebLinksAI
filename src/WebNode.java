@@ -122,20 +122,6 @@ public class WebNode {
 
 
     /**
-     * Gets the first element of the children
-     *
-     * @return first element of list
-     */
-    public final WebNode getUnivisitedNode() {
-        for (WebNode webNode : this.children) {
-            if (!webNode.isVisited()) {
-                return webNode;
-            }
-        }
-        return null;
-    }
-
-    /**
      *
      * Setters and Getters
      *
@@ -143,10 +129,6 @@ public class WebNode {
 
     public WebNode getParent() {
         return parent;
-    }
-
-    public void setParent(WebNode parent) {
-        this.parent = parent;
     }
 
     public boolean isVisited() {
@@ -163,10 +145,6 @@ public class WebNode {
 
     public String getPath() {
         return path;
-    }
-
-    public String getBaseUrl() {
-        return baseUrl;
     }
 
     public LinkedList<WebNode> getChildren() {

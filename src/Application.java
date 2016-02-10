@@ -8,12 +8,6 @@ import java.util.Scanner;
 public class Application {
 
     public static void main(String[] args) {
-        /*final WebNode webNode = new WebNode("http://www.uleth.ca", null);
-        webNode.populateChildNodes();
-        for (WebNode cwn : webNode.getChildren()) {
-            System.out.println(cwn.getPath());
-        }*/
-
         long startTime = System.currentTimeMillis();
         String startUrl = null;
         String endUrl = null;
