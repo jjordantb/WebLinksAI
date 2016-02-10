@@ -23,27 +23,30 @@ public class PathFinder {
     /**
      * Finds a path of WebNodes between the start and end WebNodes
      *
-     * @return List of WebNodes that provide a path between two web nodes
+     * @return returns the end webnode
      */
-    public ArrayList<WebNode> findPath() {
-        if (startNode.isURL()) {
-            final LinkedList<WebNode> queue = new LinkedList<>();
-            queue.add(startNode);
-            startNode.setVisited(true);
-            while (!queue.isEmpty()) {
-                WebNode node = queue.remove();
-                WebNode child = null;
-                while ((child = node.getUnivisitedNode()) != null) {
-                    child.setVisited(true);
-                    queue.add(child);
-                }
+    public WebNode findPath() {
+        final LinkedList<WebNode> queue = new LinkedList<>();
+        queue.add(startNode);
+        startNode.setVisited(true);
+        while (!queue.isEmpty()) {
+            WebNode testNode = queue.remove();
+            System.out.println(testNode.getPath() + " : " + testNode.getParent());
+            if (testNode.getPath().equals(this.endNode.getPath())) {
+                return testNode;
             }
-
-
-        } else {
-
+            testNode.populateChildNodes();
+            queue.addAll(testNode.getChildren());
+            System.out.println(queue.size());
         }
         return null;
     }
 
+    public WebNode getEndNode() {
+        return endNode;
+    }
+
+    public WebNode getStartNode() {
+        return startNode;
+    }
 }

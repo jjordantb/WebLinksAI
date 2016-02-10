@@ -7,9 +7,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -22,32 +19,25 @@ import java.util.regex.Pattern;
 public class WebNode {
 
     public static final Pattern hrefRegex = Pattern.compile("href=\"(.*?)\"");
-    public static final Pattern urlRegex = Pattern.compile("(http://.*?)/");
+    public static final Pattern urlRegex = Pattern.compile("(http://.*?)");
 
-    private final String path;
-    private final boolean isURL;
+    private String path;
     private final String baseUrl;
 
     private boolean visited;
 
     private final LinkedList<WebNode> children;
+    private WebNode parent;
 
-    public WebNode(final String url) {
-        this(url, true);
-    }
 
-    public WebNode(final String path, final boolean isURL) {
+    public WebNode(final String path, final WebNode parent) {
         this.visited = false;
+        this.parent = parent;
         this.path = path;
-        this.isURL = isURL;
         this.children = new LinkedList<>();
-        if (this.isURL) {
-            final Matcher m = urlRegex.matcher(this.path);
-            if (m.find()) {
-                this.baseUrl = m.group(1);
-            } else {
-                this.baseUrl = null;
-            }
+        final Matcher m = urlRegex.matcher(this.path);
+        if (m.find()) {
+            this.baseUrl = m.group(1);
         } else {
             this.baseUrl = null;
         }
@@ -63,6 +53,21 @@ public class WebNode {
     }
 
     /**
+     * For use in preventing adding duplicate child webnodes
+     *
+     * @param path
+     * @return
+     */
+    private boolean childrenContains(final String path) {
+        for (WebNode wn : this.children) {
+            if (wn.getPath().equals(path)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Parses the file/website and populates children with links it finds
      */
     public void populateChildNodes() {
@@ -72,16 +77,19 @@ public class WebNode {
             while (matcher.find()) {
                 final String match = matcher.group(1);
                 // For link extensions
-                if (match.startsWith("/") && match.endsWith("/")) {
-                    this.pushChildNode(new WebNode(this.baseUrl + match, this.isURL));
+                if (this.validateUrl(match) && match.startsWith("/") && !this.childrenContains(this.baseUrl + match)) {
+                    this.pushChildNode(new WebNode(this.baseUrl + match, this));
                 } else {
-                    if (this.validateUrl(match)) {
-                        this.pushChildNode(new WebNode(match, this.isURL));
+                    if (this.validateUrl(match) && !this.childrenContains(match)) {
+                        this.pushChildNode(new WebNode(match, this));
                     }
                 }
             }
-        } else {
-            System.out.println("Unable to populate child nodes");
+            for (WebNode webNode : this.children) {
+                if (webNode.getPath().endsWith("/")) {
+                    webNode.setPath(webNode.getPath().substring(0, webNode.getPath().length() - 1));
+                }
+            }
         }
     }
 
@@ -92,23 +100,17 @@ public class WebNode {
      */
     public final String getPageSource() {
         try {
-            if (this.isURL) {
-                URL url = new URL(this.path);
-                URLConnection urlConnection = url.openConnection();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), "UTF-8"));
-                String inputLine;
-                StringBuilder a = new StringBuilder();
-                while ((inputLine = reader.readLine()) != null) {
-                    a.append(inputLine);
-                }
-                reader.close();
-                return a.toString();
-            } else {
-                return new String(Files.readAllBytes(Paths.get(this.path)), StandardCharsets.UTF_8);
+            URL url = new URL(this.path);
+            URLConnection urlConnection = url.openConnection();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), "UTF-8"));
+            String inputLine;
+            StringBuilder a = new StringBuilder();
+            while ((inputLine = reader.readLine()) != null) {
+                a.append(inputLine);
             }
+            reader.close();
+            return a.toString();
         } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("Could not grab page source");
             return null;
         }
     }
@@ -143,6 +145,14 @@ public class WebNode {
      *
      */
 
+    public WebNode getParent() {
+        return parent;
+    }
+
+    public void setParent(WebNode parent) {
+        this.parent = parent;
+    }
+
     public boolean isVisited() {
         return visited;
     }
@@ -151,8 +161,8 @@ public class WebNode {
         this.visited = visited;
     }
 
-    public boolean isURL() {
-        return isURL;
+    public void setPath(String path) {
+        this.path = path;
     }
 
     public String getPath() {

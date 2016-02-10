@@ -13,6 +13,8 @@ public class UrlFilter implements Filter<String> {
     public boolean accept(String webNode) {
         return !webNode.endsWith(".jpg") && !webNode.endsWith(".png")
                 && !webNode.endsWith(".gif") && !webNode.endsWith(".mp4")
+                && !webNode.endsWith(".pdf") && !webNode.endsWith(".xml")
+                && !webNode.contains(".css")
                 && (webNode.startsWith("https://") || webNode.startsWith("http://"));
     }
 
