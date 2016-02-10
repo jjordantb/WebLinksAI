@@ -1,8 +1,3 @@
-package cs.uleth.jordan.ai;
-
-import cs.uleth.jordan.ai.util.PathFinder;
-import cs.uleth.jordan.ai.wrappers.WebNode;
-
 /**
  * Created by Jordan on 2/8/2016.
  *
